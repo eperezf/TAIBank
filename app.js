@@ -62,19 +62,14 @@ app.post('/api/v1/user', function (req, res) {
 
   var hasNumber = new RegExp('\\d');
   var hasLetter = new RegExp('[^\\d]');
-
-
   if (hasLetter.test(phone_number)) {
     return res.status(400).send({ error:true, message: 'Phone number must only have numbers' });
   }
-
   if (hasLetter.test(pin)) {
     return res.status(400).send({ error:true, message: 'PIN must only have numbers' });
   }
-
   if (hasNumber.test(first_name) || hasNumber.test(last_name)) {
     return res.status(400).send({ error:true, message: 'Names must only contain letters' });
-
   }
   if (conf_pin != pin){
     return res.status(400).send({ error:true, message: 'PIN Number does not match' });
