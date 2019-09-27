@@ -36,7 +36,7 @@ Para instalar una versión local se deben seguir los siguientes pasos:
 
 Para ver ejemplos visita [este link](examples.md).
 
-Para descargar la colección de llamadas a API para Postman, visita [este link](examples.md)
+Para descargar la colección de llamadas a API para Postman, visita [este link](TAIBank.postman_collection.json).
 
 
 ## Licencia y contacto:

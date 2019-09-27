@@ -44,7 +44,7 @@
 				"header": [],
 				"body": {},
 				"url": {
-					"raw": "http://localhost:3000/api/v1/user/17",
+					"raw": "http://localhost:3000/api/v1/user/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -54,7 +54,7 @@
 						"api",
 						"v1",
 						"user",
-						"17"
+						"1"
 					]
 				}
 			},
@@ -75,37 +75,37 @@
 					"urlencoded": [
 						{
 							"key": "first_name",
-							"value": "Eduardo José",
+							"value": "Juan Andrés",
 							"description": "",
 							"type": "text"
 						},
 						{
 							"key": "last_name",
-							"value": "Pérez Fernández",
+							"value": "González Moraga",
 							"description": "",
 							"type": "text"
 						},
 						{
 							"key": "address",
-							"value": "Las Encinas 6318, Vitacura",
+							"value": "Diagonal Las Torres 2640, Peñalolén",
 							"description": "",
 							"type": "text"
 						},
 						{
 							"key": "phone_number",
-							"value": "976080409",
+							"value": "940305843",
 							"description": "",
 							"type": "text"
 						},
 						{
 							"key": "pin",
-							"value": "1653",
+							"value": "3392",
 							"description": "",
 							"type": "text"
 						},
 						{
 							"key": "conf_pin",
-							"value": "1653",
+							"value": "3392",
 							"description": "",
 							"type": "text"
 						}
@@ -354,7 +354,7 @@
 					"urlencoded": [
 						{
 							"key": "from_id_debit_card",
-							"value": "",
+							"value": "1",
 							"description": "",
 							"type": "text"
 						},
@@ -396,6 +396,27 @@
 						"v1",
 						"card",
 						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Basic API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:3000/api/v1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1"
 					]
 				}
 			},
