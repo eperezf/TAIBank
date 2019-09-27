@@ -43,14 +43,14 @@ DROP TABLE IF EXISTS `TAIBank`.`debit_card` ;
 CREATE TABLE IF NOT EXISTS `TAIBank`.`debit_card` (
   `id_debit_card` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_user` INT UNSIGNED NOT NULL,
-  `balance` INT UNSIGNED NOT NULL,
+  `balance` BIGINT UNSIGNED NOT NULL,
   PRIMARY KEY (`id_debit_card`),
   UNIQUE INDEX `id_debit_card_UNIQUE` (`id_debit_card` ASC),
   INDEX `user_debit_idx` (`id_user` ASC),
   CONSTRAINT `user_debit`
     FOREIGN KEY (`id_user`)
     REFERENCES `TAIBank`.`users` (`id_user`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -62,10 +62,12 @@ DROP TABLE IF EXISTS `TAIBank`.`debit_transaction` ;
 
 CREATE TABLE IF NOT EXISTS `TAIBank`.`debit_transaction` (
   `debit_transaction_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `from_card` INT UNSIGNED NOT NULL,
-  `to_card` INT UNSIGNED NOT NULL,
+  `from_card` INT UNSIGNED NULL,
+  `to_card` INT UNSIGNED NULL,
+  `amount` BIGINT UNSIGNED NOT NULL,
   `date` DATETIME NOT NULL,
   `comment` VARCHAR(45) NULL,
+  `type`INT UNSIGNED NOT NULL,
   PRIMARY KEY (`debit_transaction_id`),
   INDEX `from_card_id_idx` (`from_card` ASC),
   INDEX `to_card_id_idx` (`to_card` ASC),
@@ -73,12 +75,12 @@ CREATE TABLE IF NOT EXISTS `TAIBank`.`debit_transaction` (
   CONSTRAINT `from_card_id`
     FOREIGN KEY (`from_card`)
     REFERENCES `TAIBank`.`debit_card` (`id_debit_card`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `to_card_id`
     FOREIGN KEY (`to_card`)
     REFERENCES `TAIBank`.`debit_card` (`id_debit_card`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
