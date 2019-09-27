@@ -14,9 +14,9 @@ El sistema está basado en Node.JS y una base de datos MySQL.
 
 Para instalar una versión local, se deben cumplir los siguientes requisitos:
 
-* Tener instaldo Node.JS en el equipo ([Windows, macOS, Linux](https://nodejs.org/en/)).
+* Tener instalado Node.JS en el equipo ([Windows, macOS, Linux](https://nodejs.org/en/)).
 
-* Tener instalado MySQL (Puede ser por medio de LAMP o MAMP o de forma independiente).
+* Tener instalado MySQL (Puede ser por medio de XAMPP o MAMP o de forma independiente).
 
 Para instalar una versión local se deben seguir los siguientes pasos:
 
