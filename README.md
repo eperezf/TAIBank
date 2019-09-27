@@ -32,6 +32,13 @@ Para instalar una versión local se deben seguir los siguientes pasos:
 
 * Por defecto la aplicación estará disponible en el puerto 3000
 
+## Ejemplos:
+
+Para ver ejemplos visita [este link](examples.md).
+
+Para descargar la colección de llamadas a API para Postman, visita [este link](examples.md)
+
+
 ## Licencia y contacto:
 
 Licencia Apache 2.0

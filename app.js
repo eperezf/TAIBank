@@ -50,7 +50,7 @@ app.get('/api/v1/', function (req, res){
 app.get('/api/v1/users', function(req, res){
   sql.query('SELECT id_user, first_name, last_name, address, phone_number FROM users', function (error, results, fields) {
     if (error) throw error;
-    return res.send({ error: false, data: results});
+    return res.status(200).send({ error: false, data: results});
   });
 });
 
@@ -63,7 +63,7 @@ app.get('/api/v1/user/:id', function (req, res) {
   sql.query('SELECT id_user, first_name, last_name, address, phone_number FROM users where id_user=?', id_user, function (error, results, fields) {
     if (error) throw error;
     if (!results[0]) {
-      return res.send({error: true, message: "User does not exist"});
+      return res.status(404).send({error: true, message: "User does not exist"});
     }
     else {
       return res.send({ error: false, data: results[0]});
@@ -259,19 +259,19 @@ app.post('/api/v1/card/transfer', function (req,res){
   }
 
   if (!from_id_debit_card){
-    return res.send({ error: true, message: 'Missing Body key: from_id_debit_card'});
+    return res.status(400).send({ error: true, message: 'Missing Body key: from_id_debit_card'});
   }
   else if (!to_id_debit_card){
-    return res.send({ error: true, message: 'Missing Body key: to_id_debit_card'});
+    return res.status(400).send({ error: true, message: 'Missing Body key: to_id_debit_card'});
   }
   else if (!pin){
-    return res.send({ error: true, message: 'Missing Body key: pin'});
+    return res.status(400).send({ error: true, message: 'Missing Body key: pin'});
   }
   else if (!amount){
-    return res.send({ error: true, message: 'Missing Body key: amount'});
+    return res.status(400).send({ error: true, message: 'Missing Body key: amount'});
   }
   else if (from_id_debit_card == to_id_debit_card){
-    return res.send({ error: true, message: 'You can\'t transfer to the same account'});
+    return res.status(400).send({ error: true, message: 'You can\'t transfer to the same account'});
   }
   else {
     sql.query('SELECT * FROM debit_card WHERE id_debit_card=?', from_id_debit_card, function(error,result,fields){
@@ -320,5 +320,5 @@ app.post('/api/v1/card/transfer', function (req,res){
 
 // Ver historial de transacciones
 app.get('/api/v1/history', function(req,res){
-  return res.send({ error: false, message: 'Temporarily not available'});
+  return res.status(200).send({ error: false, message: 'Temporarily not available'});
 });
