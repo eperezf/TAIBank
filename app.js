@@ -101,7 +101,7 @@ app.post('/api/v1/user', function (req, res) {
     "INSERT INTO users SET ? ", {first_name: first_name, last_name: last_name, address: address, phone_number: phone_number, pin: pin}, function (error, results, fields) {
       if (error) throw error;
       let id_user = results.insertId;
-      return res.send({ error: false, id_user: id_user, message: 'New user has been created successfully.' });
+      return res.status(200).send({ error: false, id_user: id_user, message: 'New user has been created successfully.' });
     });
 });
 
@@ -111,16 +111,16 @@ app.post('/api/v1/card', function(req, res){
   let pin = req.body.pin;
   sql.query('SELECT id_user, first_name, last_name, address, phone_number, pin FROM users where id_user=?', id_user, function (error, results, fields) {
     if (!results[0]){
-      return res.send({error: true, message: "ID does not exist"});
+      return res.status(404).send({error: true, message: "ID does not exist"});
     }
     else if (pin != results[0].pin){
-        return res.send({error: true, message: "PIN does not match"});
+        return res.status(403).send({error: true, message: "PIN does not match"});
     }
     else {
       sql.query("INSERT INTO debit_card SET ? ", {id_user: id_user, balance: 0}, function (error, results, fields) {
         if (error) throw error;
         let id_debit_card = results.insertId;
-        return res.send({ error: false, id_debit_card: id_debit_card, message: 'New card has been created.'});
+        return res.status(200).send({ error: false, id_debit_card: id_debit_card, message: 'New card has been created.'});
       });
     }
   });
@@ -133,22 +133,22 @@ app.post('/api/v1/card/deposit', function (req, res){
   let amount = req.body.amount;
   let balance = 0;
   if (!id_debit_card) {
-    return res.send({ error: true, message: 'Missing Body key: id_debit_card'});
+    return res.status(400).send({ error: true, message: 'Missing Body key: id_debit_card'});
   }
   else if (!pin){
-    return res.send({ error: true, message: 'Missing Body key: pin'});
+    return res.status(400).send({ error: true, message: 'Missing Body key: pin'});
   }
   else if (!amount){
-    return res.send({ error: true, message: 'Missing Body key: amount'});
+    return res.status(400).send({ error: true, message: 'Missing Body key: amount'});
   }
   else {
     sql.query("SELECT d.id_debit_card, d.balance, u.id_user, u.pin FROM debit_card as d LEFT JOIN users as u ON d.id_user = u.id_user WHERE d.id_debit_card = ?", id_debit_card, function (error, results, fields){
       if (error) throw error;
       if(!results){
-        return res.send({ error: true, message: 'ID does not exist'});
+        return res.status(404).send({ error: true, message: 'ID does not exist'});
       }
       else if (results[0].pin != pin){
-        return res.send({ error: true, message: 'PIN does not match'});
+        return res.status(403).send({ error: true, message: 'PIN does not match'});
       }
       else {
         balance = results[0].balance;
@@ -160,7 +160,7 @@ app.post('/api/v1/card/deposit', function (req, res){
             if (error) throw error;
             console.log("TRANSACTION RECORDED");
           });
-          return res.send({ error: false, data: {old_balance: balance, new_balance: newBalance}, message: 'Deposit successful'});
+          return res.status(200).send({ error: false, data: {old_balance: balance, new_balance: newBalance}, message: 'Deposit successful'});
         });
       }
     });
@@ -174,27 +174,27 @@ app.post('/api/v1/card/withdraw', function (req, res){
   let amount = req.body.amount;
   let balance = 0;
   if (!id_debit_card) {
-    return res.send({ error: true, message: 'Missing Body key: id_debit_card'});
+    return res.status(400).send({ error: true, message: 'Missing Body key: id_debit_card'});
   }
   else if (!pin){
-    return res.send({ error: true, message: 'Missing Body key: pin'});
+    return res.status(400).send({ error: true, message: 'Missing Body key: pin'});
   }
   else if (!amount){
-    return res.send({ error: true, message: 'Missing Body key: amount'});
+    return res.status(400).send({ error: true, message: 'Missing Body key: amount'});
   }
   else {
     sql.query("SELECT d.id_debit_card, d.balance, u.id_user, u.pin FROM debit_card as d LEFT JOIN users as u ON d.id_user = u.id_user WHERE d.id_debit_card = ?", id_debit_card, function (error, results, fields){
       if (error) throw error;
       if(!results){
-        return res.send({ error: true, message: 'ID does not exist'});
+        return res.status(404).send({ error: true, message: 'ID does not exist'});
       }
       else if (results[0].pin != pin){
-        return res.send({ error: true, message: 'PIN does not match'});
+        return res.status(403).send({ error: true, message: 'PIN does not match'});
       }
       else {
         balance = results[0].balance;
         if (balance < amount) {
-          return res.send({ error: true, message: 'Insufficient funds.'});
+          return res.status(200).send({ error: true, message: 'Insufficient funds.'});
         }
         else {
           let newBalance = parseInt(balance) - parseInt(amount);
@@ -205,7 +205,7 @@ app.post('/api/v1/card/withdraw', function (req, res){
               if (error) throw error;
               console.log("TRANSACTION RECORDED");
             });
-            return res.send({ error: false, data: {old_balance: balance, new_balance: newBalance}, message: 'Withdraw successful'});
+            return res.status(200).send({ error: false, data: {old_balance: balance, new_balance: newBalance}, message: 'Withdraw successful'});
           });
         }
       }
@@ -276,24 +276,24 @@ app.post('/api/v1/card/transfer', function (req,res){
   else {
     sql.query('SELECT * FROM debit_card WHERE id_debit_card=?', from_id_debit_card, function(error,result,fields){
       if (!result[0]) {
-        return res.send({ error: true, message: 'Origin card does not exist'});
+        return res.status(404).send({ error: true, message: 'Origin card does not exist'});
       }
       else {
         origin_card = result[0];
         if (amount > origin_card.balance){
-          return res.send({ error: true, message: 'Insufficient funds'});
+          return res.status(200).send({ error: true, message: 'Insufficient funds'});
         }
         else {
           sql.query('SELECT * FROM debit_card WHERE id_debit_card=?', to_id_debit_card, function(error,result,fields){
             if (!result[0]) {
-              return res.send({ error: true, message: 'Destination card does not exist'});
+              return res.status(404).send({ error: true, message: 'Destination card does not exist'});
             }
             else {
               destination_card = result[0];
               sql.query('SELECT * FROM users WHERE id_user=?', origin_card.id_user, function(error,result,fields){
                 user_data = result[0];
                 if (user_data.PIN != pin) {
-                  return res.send({ error: true, message: 'PIN does not match'});
+                  return res.status(403).send({ error: true, message: 'PIN does not match'});
                 }
                 else {
                   origin_card.newBalance = parseInt(origin_card.balance) - parseInt(amount);
@@ -307,7 +307,7 @@ app.post('/api/v1/card/transfer', function (req,res){
                   sql.query("INSERT INTO debit_transaction SET ?", {amount: amount, from_card: from_id_debit_card, to_card: to_id_debit_card, date: date.toISOString().slice(0, 19).replace('T', ' '), comment: comment, type: 0}, function(error, results, fields){
                     if (error) throw error;
                   });
-                  return res.send({ error: false, message: 'Transaction successful'});
+                  return res.status(200).send({ error: false, message: 'Transaction successful'});
                 }
               });
             }
