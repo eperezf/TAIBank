@@ -11,6 +11,7 @@ const express = require('express');
 var bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
+
 var sql;
 
 // Haremos uso de body parser para JSON.
@@ -18,6 +19,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
+connect();
 
 function connect(){
   sql = mysql.createConnection({
@@ -26,13 +28,16 @@ function connect(){
     password: "root",
     database: 'TAIBank'
   });
-  sql.on('error', connect());
+
+  sql.connect(function(err) {
+    if (err) throw err;
+    console.log("Conectado a la DB");
+  });
 }
 
-// Nos conectamos a la DB
-sql.connect(function(err) {
-  if (err) throw err;
-  console.log("Conectado a la DB");
+sql.on('error', function(err){
+  console.log("Error de conexión. Reintentando en 5 segundos.");
+  setTimeout(connect, 5000);
 });
 
 // Escuchar en el puerto por defecto (3000)
@@ -322,5 +327,3 @@ app.post('/api/v1/card/transfer', function (req,res){
 app.get('/api/v1/history', function(req,res){
   return res.status(200).send({ error: false, message: 'Temporarily not available'});
 });
-
-connect();
