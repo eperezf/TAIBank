@@ -11,20 +11,23 @@ const express = require('express');
 var bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
+var sql;
 
 // Haremos uso de body parser para JSON.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-  extended: true
+  extended: false
 }));
 
-// Iniciamos la conexión con la base de datos SQL. Cambiar host, user, password y database según corresponda.
-var sql = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: 'TAIBank'
-});
+function connect(){
+  sql = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "root",
+    database: 'TAIBank'
+  });
+  sql.on('error', connect());
+}
 
 // Nos conectamos a la DB
 sql.connect(function(err) {
@@ -42,9 +45,6 @@ app.get('/api/v1/', function (req, res){
     message: 'API TAIBank v1'
   });
 });
-
-
-
 
 // Obtener listado de usuarios
 app.get('/api/v1/users', function(req, res){
@@ -322,3 +322,5 @@ app.post('/api/v1/card/transfer', function (req,res){
 app.get('/api/v1/history', function(req,res){
   return res.status(200).send({ error: false, message: 'Temporarily not available'});
 });
+
+connect();
