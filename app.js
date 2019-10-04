@@ -12,33 +12,41 @@ var bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 
-var sql;
-
 // Haremos uso de body parser para JSON.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
-connect();
 
-function connect(){
-  sql = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "root",
+
+var db_config = {
+  host: 'localhost',
+    user: 'root',
+    password: 'root',
     database: 'TAIBank'
-  });
+};
 
+var sql;
+
+function handleDisconnect() {
+  sql = mysql.createConnection(db_config);
   sql.connect(function(err) {
-    if (err) throw err;
-    console.log("Conectado a la DB");
+    if(err) {
+      console.log('Error conectando a la DB:', err);
+      setTimeout(handleDisconnect, 5000);
+    }
+  });
+  sql.on('error', function(err) {
+    console.log('error de DB', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+      handleDisconnect();
+    } else {
+      throw err;
+    }
   });
 }
 
-sql.on('error', function(err){
-  console.log("Error de conexión. Reintentando en 5 segundos.");
-  setTimeout(connect, 5000);
-});
+handleDisconnect();
 
 // Escuchar en el puerto por defecto (3000)
 app.listen(port, () => console.log(`TAIBank funcionando en el puerto ${port}!`));
@@ -87,6 +95,10 @@ app.post('/api/v1/user', function (req, res) {
 
   var hasNumber = new RegExp('\\d');
   var hasLetter = new RegExp('[^\\d]');
+
+  if (!first_name || !last_name || !address || !phone_number || !pin || !conf_pin) {
+    return res.status(400).send({ error:true, message: 'One or more items are missing' });
+  }
   if (hasLetter.test(phone_number)) {
     return res.status(400).send({ error:true, message: 'Phone number must only have numbers' });
   }
@@ -98,9 +110,6 @@ app.post('/api/v1/user', function (req, res) {
   }
   if (conf_pin != pin){
     return res.status(400).send({ error:true, message: 'PIN Number does not match' });
-  }
-  if (!first_name || !last_name || !address || !phone_number || !pin || !conf_pin) {
-    return res.status(400).send({ error:true, message: 'One or more items are missing' });
   }
   sql.query(
     "INSERT INTO users SET ? ", {first_name: first_name, last_name: last_name, address: address, phone_number: phone_number, pin: pin}, function (error, results, fields) {
