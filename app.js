@@ -155,6 +155,9 @@ app.post('/api/v1/card/deposit', function (req, res){
   else if (!amount){
     return res.status(400).send({ error: true, message: 'Missing Body key: amount'});
   }
+  else if (amount == NaN){
+    return res.status(400).send({ error: true, message: 'amount cannot be blank'});
+  }
   else {
     sql.query("SELECT d.id_debit_card, d.balance, u.id_user, u.pin FROM debit_card as d LEFT JOIN users as u ON d.id_user = u.id_user WHERE d.id_debit_card = ?", id_debit_card, function (error, results, fields){
       if (error) throw error;
